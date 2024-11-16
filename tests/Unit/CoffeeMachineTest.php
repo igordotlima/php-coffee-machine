@@ -466,4 +466,41 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals($coin->getValue(), $machine->getCapturedFunds());
         $this->assertStringContainsString("Captured funds: {$coin->getValue()}", $this->getActualOutput());
     }
+
+    public function test_request_full_refund()
+    {
+        ////
+        // 1. Arrange
+        ////
+
+        $slot = new CoinPaymentSlot();
+        $coin = new Coin((new Coffee())->getPrice());
+
+        $machine = new CoffeeMachine();
+
+        ////
+        // 2. Act
+        ////
+
+        $machine->addSlot($slot);
+        $machine->addFunds($coin);
+
+        $machine->addButton(new RefundButton());
+
+        // Save the fund value before requesting a refund.
+        $fundsBeforeRefund = $machine->getPendingFunds();
+
+        $machine->pressButton('Refund');
+
+        ////
+        // 3. Assert
+        ////
+
+        // First check that the available funds were equal to the currency inserted.
+        $this->assertEquals($coin->getValue(), $fundsBeforeRefund);
+
+        // After make sure the amount was refunded.
+        $this->assertEquals(0, $machine->getPendingFunds());
+        $this->assertStringContainsString("Amount refunded: {$coin->getValue()}", $this->getActualOutput());
+    }
 }
