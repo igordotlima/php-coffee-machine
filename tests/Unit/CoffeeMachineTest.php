@@ -362,17 +362,11 @@ class CoffeeMachineTest extends TestCase
 
         $consumable = new Coffee();
 
-        $milkContent = new Milk();
-        $sugarContent = new Sugar();
-
         $machine = new CoffeeMachine();
+        $machine->addSlot(new CoinPaymentSlot());
 
-        ////
-        // 2. Act
-        ////
-
-        $machine->addContentItem($sugarContent);
-        $machine->addContentItem($milkContent);
+        $machine->addContentItem(new Sugar(10));
+        $machine->addContentItem(new Milk(10));
 
         $machine->addConsumableItem($consumable);
 
@@ -381,12 +375,21 @@ class CoffeeMachineTest extends TestCase
 
         $machine->addButton(new CoffeeButton());
 
+        ////
+        // 2. Act
+        ////
+
         // First press the button without funds to select the consumable.
         $machine->pressButton('Coffee');
 
         // Then press the content button to update.
         $machine->pressButton('Milk');
         $machine->pressButton('Sugar');
+
+        $machine->addFunds(new Coin($consumable->getPrice()));
+
+        // Purchase the drink.
+        $machine->pressButton('Coffee');
 
         ////
         // 3. Assert
@@ -402,8 +405,8 @@ class CoffeeMachineTest extends TestCase
         $this->assertCount(2, $selectedConsumableContents);
 
         // Assert the contents match to what we added before.
-        $this->assertEquals(get_class($selectedConsumableContents[0]), get_class($milkContent));
-        $this->assertEquals(get_class($selectedConsumableContents[1]), get_class($sugarContent));
+        $this->assertEquals(Milk::class, get_class($selectedConsumableContents[0]));
+        $this->assertEquals(Sugar::class, get_class($selectedConsumableContents[1]));
     }
 
     public function test_cannot_update_past_maximum_level()

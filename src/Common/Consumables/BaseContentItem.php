@@ -12,7 +12,12 @@ abstract class BaseContentItem implements ContentItem
      *
      * @var int
      */
-    private int $quantity = 0;
+    private int $quantity;
+
+    public function __construct(int $quantity = 0)
+    {
+        $this->quantity = $quantity;
+    }
 
     public function getStockQuantity(): int
     {
@@ -26,7 +31,7 @@ abstract class BaseContentItem implements ContentItem
 
     public function consume(): void
     {
-        if ($this->quantity === 0) {
+        if ($this->isOutOfStock()) {
             throw new OutOfBoundsException(
                 message: 'There are no more contents to consume.'
             );

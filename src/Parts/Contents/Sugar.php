@@ -11,9 +11,4 @@ class Sugar extends BaseContentItem
     {
         return 'Sugar';
     }
-
-    public function getMaximumQuantity(): int
-    {
-        return 4;
-    }
 }

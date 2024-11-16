@@ -11,9 +11,4 @@ class Milk extends BaseContentItem
     {
         return 'Milk';
     }
-
-    public function getMaximumQuantity(): int
-    {
-        return 4;
-    }
 }

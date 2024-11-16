@@ -253,7 +253,7 @@ final class CoffeeMachine
      */
     public function addContentItem(ContentItem $item): void
     {
-        $this->contents[] = $item;
+        $this->contents[$item->getName()] = $item;
     }
 
     /**
@@ -300,7 +300,9 @@ final class CoffeeMachine
 
         // Reduce content stock quantity.
         foreach ($consumable->getContents() as $content) {
-            $content->consume();
+            // Add the content to the drink and consume it.
+            $itemContent = $this->contents[$content->getName()];
+            $itemContent->consume();
 
             // Feedback
             ConsoleUtils::writeLine("Adding '{$content->getName()}' to consumable item.");
