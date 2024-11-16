@@ -1,0 +1,9 @@
+### Composer
+composer.phar
+/vendor
+
+### PhpStorm
+/.idea
+
+### PHPUnit
+.phpunit.*
