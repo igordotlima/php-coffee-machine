@@ -404,6 +404,10 @@ class CoffeeMachineTest extends TestCase
         // Assert that we have 2 contents.
         $this->assertCount(2, $selectedConsumableContents);
 
+        // Assert that we see output.
+        $this->assertStringContainsString("Adding 'Milk'", $this->getActualOutput());
+        $this->assertStringContainsString("Adding 'Sugar'", $this->getActualOutput());
+
         // Assert the contents match to what we added before.
         $this->assertEquals(Milk::class, get_class($selectedConsumableContents[0]));
         $this->assertEquals(Sugar::class, get_class($selectedConsumableContents[1]));
