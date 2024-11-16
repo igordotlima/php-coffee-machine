@@ -494,7 +494,7 @@ final class CoffeeMachine
         }
 
         if ($this->getPendingFunds() < $consumable->getPrice()) {
-            throw new InsufficientFundsException();
+            throw new InsufficientFundsException($consumable->getPrice());
         }
 
         // Go through all the available slots and capture the funds.

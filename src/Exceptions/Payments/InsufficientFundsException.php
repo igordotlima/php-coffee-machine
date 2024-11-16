@@ -6,8 +6,9 @@ use Exception;
 
 class InsufficientFundsException extends Exception
 {
-    public function __construct()
+    public function __construct(int $expected)
     {
-        parent::__construct('Insufficient funds.');
+        parent::__construct(
+            message: "Insufficient funds. (Expected: $expected)");
     }
 }
