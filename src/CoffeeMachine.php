@@ -301,6 +301,9 @@ final class CoffeeMachine
         // Reduce content stock quantity.
         foreach ($consumable->getContents() as $content) {
             $content->consume();
+
+            // Feedback
+            ConsoleUtils::writeLine("Adding '{$content->getName()}' to consumable item.");
         }
 
         // Give some feedback.
@@ -387,13 +390,15 @@ final class CoffeeMachine
         $contents = array_filter(
             array: $consumable->getContents(),
             callback: function (ContentItem $value) use ($content) {
-                return $value === $content;
+                return get_class($value) === $content;
             }
         );
 
-        // Reset the content level.
-        if (count($contents) === self::MAX_CONSUMABLE_CONTENTS) {
+        // Reset the content level and exit since the level is between 0 and 4.
+        if (count($contents) >= self::MAX_CONSUMABLE_CONTENTS) {
             $consumable->clearContents();
+
+            return;
         }
 
         $consumable->addContentItem(new $content);

@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 class CoffeeMachineTest extends TestCase
 {
 
-    public function test_get_coin_slots()
+    public function test_can_get_coin_slots()
     {
         ////
         // 1. Arrange
@@ -40,7 +40,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains($slot, $machine->getSlots());
     }
 
-    public function test_get_banknote_slots()
+    public function test_can_get_banknote_slots()
     {
         ////
         // 1. Arrange
@@ -62,7 +62,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains($slot, $machine->getSlots());
     }
 
-    public function test_get_captured_funds()
+    public function test_can_get_captured_funds()
     {
         ////
         // 1. Arrange
@@ -94,7 +94,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals($machine->getCapturedFunds(), $consumable->getPrice());
     }
 
-    public function test_set_selected_consumable()
+    public function test_can_set_selected_consumable()
     {
         ////
         // 1. Arrange
@@ -117,7 +117,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals($consumable, $machine->getSelectedConsumable());
     }
 
-    public function test_get_consumables()
+    public function test_can_get_consumables()
     {
         ////
         // 1. Arrange
@@ -139,7 +139,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertNotEmpty($machine->getConsumables());
     }
 
-    public function test_remove_consumable_item()
+    public function test_can_remove_consumable_item()
     {
         ////
         // 1. Arrange
@@ -162,7 +162,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertNotContains($consumable, $machine->getConsumables());
     }
 
-    public function test_add_content_item()
+    public function test_can_add_content_item()
     {
         ////
         // 1. Arrange
@@ -184,7 +184,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains($content, $machine->getContents());
     }
 
-    public function test_remove_content_item()
+    public function test_can_remove_content_item()
     {
         ////
         // 1. Arrange
@@ -207,7 +207,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertNotContains($content, $machine->getContents());
     }
 
-    public function test_get_buttons()
+    public function test_can_get_buttons()
     {
         ////
         // 1. Arrange
@@ -229,7 +229,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains($button, $machine->getButtons());
     }
 
-    public function test_press_button()
+    public function test_can_press_button()
     {
         ////
         // 1. Arrange
@@ -253,7 +253,7 @@ class CoffeeMachineTest extends TestCase
         $this->expectOutputString(PHP_EOL . '> Amount refunded: 0' . PHP_EOL);
     }
 
-    public function test_add_consumable_item()
+    public function test_can_add_consumable_item()
     {
         ////
         // 1. Arrange
@@ -275,7 +275,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertContains($consumable, $machine->getConsumables());
     }
 
-    public function test_get_pending_funds()
+    public function test_can_get_pending_funds()
     {
         ////
         // 1. Arrange
@@ -300,7 +300,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals($currency->getValue(), $machine->getPendingFunds());
     }
 
-    public function test_get_selected_consumable()
+    public function test_can_get_selected_consumable()
     {
         ////
         // 1. Arrange
@@ -332,7 +332,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals($consumable, $machine->getSelectedConsumable());
     }
 
-    public function test_get_contents()
+    public function test_can_get_contents()
     {
         ////
         // 1. Arrange
@@ -354,7 +354,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertNotEmpty($machine->getContents());
     }
 
-    public function test_update_content_level()
+    public function test_can_update_content_level()
     {
         ////
         // 1. Arrange
@@ -406,7 +406,59 @@ class CoffeeMachineTest extends TestCase
         $this->assertEquals(get_class($selectedConsumableContents[1]), get_class($sugarContent));
     }
 
-    public function test_display_pending_funds()
+    public function test_cannot_update_past_maximum_level()
+    {
+        ////
+        // 1. Arrange
+        ////
+
+        $machine = new CoffeeMachine();
+
+        ////
+        // 2. Act
+        ////
+
+        $machine->addContentItem(new Milk());
+        $machine->addContentItem(new Sugar());
+
+        $machine->addConsumableItem(new Coffee());
+
+        $machine->addButton(new MilkContentButton());
+        $machine->addButton(new SugarContentButton());
+
+        $machine->addButton(new CoffeeButton());
+
+        // First press the button without funds to select the consumable.
+        $machine->pressButton('Coffee');
+
+        // Then press the content button to update.
+        for ($i = 0; $i < CoffeeMachine::MAX_CONSUMABLE_CONTENTS; $i++) {
+            $machine->pressButton('Milk');
+        }
+
+        // Get and save the consumable contents before proceeding.
+        $oldConsumableContents = $machine
+            ->getSelectedConsumable()
+            ->getContents();
+
+        // Press one more time to go to zero.
+        $machine->pressButton('Milk');
+
+        // Get and save the consumable after proceeding.
+        $newConsumable = $machine->getSelectedConsumable();
+
+        ////
+        // 3. Assert
+        ////
+
+        // Use the copy to validate the old data.
+        $this->assertCount(CoffeeMachine::MAX_CONSUMABLE_CONTENTS, $oldConsumableContents);
+
+        // Use this assertion to validate the difference.
+        $this->assertEmpty($newConsumable->getContents());
+    }
+
+    public function test_can_display_pending_funds()
     {
         ////
         // 1. Arrange
@@ -434,7 +486,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertStringContainsString("Pending funds: {$coin->getValue()}", $this->getActualOutput());
     }
 
-    public function test_display_captured_funds()
+    public function test_can_display_captured_funds()
     {
         ////
         // 1. Arrange
@@ -467,7 +519,7 @@ class CoffeeMachineTest extends TestCase
         $this->assertStringContainsString("Captured funds: {$coin->getValue()}", $this->getActualOutput());
     }
 
-    public function test_request_full_refund()
+    public function test_can_request_full_refund()
     {
         ////
         // 1. Arrange
