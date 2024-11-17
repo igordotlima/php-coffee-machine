@@ -132,7 +132,7 @@ final class CoffeeMachine
      * @param PaymentCurrency $currency
      * @return PaymentSlot|null     The payment slot instance or null if none found.
      */
-    public function findPaymentSlot(PaymentCurrency $currency): ?PaymentSlot
+    private function findPaymentSlot(PaymentCurrency $currency): ?PaymentSlot
     {
         foreach ($this->getSlots() as $slot) {
             if ($slot->acceptsCurrency($currency)) {
@@ -160,7 +160,7 @@ final class CoffeeMachine
      *
      * @return bool
      */
-    public function hasConsumable(string $consumable): bool
+    private function hasConsumable(string $consumable): bool
     {
         $consumables = array_filter($this->getConsumables(), function (ConsumableItem $item) use ($consumable) {
             return get_class($item) === $consumable;
